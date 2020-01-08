@@ -33,7 +33,7 @@ class GenService
     public function getValuesInString(String $str)
     {
         $matches = [];
-        preg_match_all('/{[A-Za-z0-9]+}/', $str, $matches);
+        preg_match_all('/{[A-Za-z0-9\-_]+}/', $str, $matches);
         return $matches[0];
     }
 
@@ -47,11 +47,11 @@ class GenService
         {
             // Search values in file path
             $filePath = $file->getPathname();
-            $values += $this->getValuesInString($filePath);
+            $values = array_merge($values, $this->getValuesInString($filePath));
 
             // Search values in file content
             $fileContent = $file->getContents();
-            $values += $this->getValuesInString($fileContent);
+            $values = array_merge($values, $this->getValuesInString($fileContent));
         }
 
         return array_unique($values);
