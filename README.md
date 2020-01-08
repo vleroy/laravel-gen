@@ -57,8 +57,9 @@ The files structure in the `resources/templates/<folder>` folder will be replica
 
 ## Example
 ### Artisan
-The `{my_value}` pattern indicates a dynamic values and the command `php artisan <folder>` will prompt you for a replacement value.
-These replacement values can be used in paths and in files content.
+- The `{my_value}` pattern indicates a dynamic value.
+- The command `php artisan <folder>` will prompt you for a replacement value.
+- These replacement values can be used in paths and in files content.
 ```bash
 $ php artisan gen Model                                                          
 
