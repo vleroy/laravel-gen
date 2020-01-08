@@ -30,6 +30,13 @@ class GenService
         return resource_path().$this->rootPath.$folder;
     }
 
+    public function getValuesInString(String $str)
+    {
+        $matches = [];
+        preg_match_all('/{[A-Za-z0-9]+}/', $str, $matches);
+        return $matches[0];
+    }
+
     public function getRequiredValues(String $folder)
     {
         $dirPath = $this->getDirPath($folder);
@@ -38,11 +45,13 @@ class GenService
 
         foreach($files as $file)
         {
-            $fileContent = $file->getContents();
-            $matches = [];
-            preg_match_all('/{[A-Za-z0-9]+}/', $fileContent, $matches);
+            // Search values in file path
+            $filePath = $file->getPathname();
+            $values += $this->getValuesInString($filePath);
 
-            $values += $matches[0];
+            // Search values in file content
+            $fileContent = $file->getContents();
+            $values += $this->getValuesInString($fileContent);
         }
 
         return array_unique($values);
@@ -56,26 +65,33 @@ class GenService
 
         foreach($files as $file)
         {
-            $processedFile = $this->processFile($file, $data);
+            // Process file content
+            $fileContent = $file->getContents();
+            $processedFile = $this->processString($fileContent, $data);
+
+            // Process file path
+            $filePath = $file->getPathName();
+            $filePath = $this->processString($filePath, $data);
             $filePath = str_replace(
                 $dirPath,
                 $basePath,
-                $file->getPathName()
+                $filePath
             );
 
-            File::put($filePath, $processedFile);
+            $fileDirPath = pathinfo($filePath, PATHINFO_DIRNAME);
+            File::makeDirectory($fileDirPath, 0755, true, true);
+
+            File::put($filePath, $processedFile, 0755, true);
         }
     }
 
-    public function processFile($file, $data)
+    public function processString($str, $data)
     {
-        $fileContent = $file->getContents();
-
         foreach($data as $key => $value)
         {
-            $fileContent = str_replace($key, $value, $fileContent);
+            $str = str_replace($key, $value, $str);
         }
 
-        return $fileContent;
+        return $str;
     }
 }
