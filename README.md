@@ -9,7 +9,7 @@ Simple files generator used to easily create multiple files at once.
 ## Installation
 The package can be installed using composer.
 ```bash
-composer require vleroy/laravel-gen
+composer require-dev vleroy/laravel-gen
 ```
 
 
